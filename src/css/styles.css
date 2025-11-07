@@ -7,12 +7,172 @@
 /* Common styles */
 @import url('./reset.css');
 @import url('./base.css');
-@import url('./container.css');
-@import url('./animations.css');
 
-/* Sections style */
-@import url('./header.css');
-@import url('./vite-promo.css');
-@import url('./badges.css');
-@import url('./back-link.css');
-@import url('./footer.css');
+.container {
+         /* width: 1128px; */
+        display: block;
+        margin: 0 auto;
+         padding: 36px 15px;
+}
+
+.form {
+   display: flex;              /* Разместим элементы в одну линию */
+  justify-content: center;    /* Центрируем */
+  align-items: center;
+  gap: 8px;                  /* Расстояние между input и кнопкой */
+  margin: 20px auto;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.form input[type="text"] {
+  max-width: 272px;
+  padding: 8px 16px;
+  border: 1px #808080 solid;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+  font-size: 16px; 
+}
+
+.form input[type="text"]:focus {
+  border-color: #4E75FF;
+  outline: none;
+}
+
+.form input[type="text"]:hover {
+  border-color: black;
+  outline: none;
+}
+
+.form input::placeholder {
+   font-family: Montserrat;
+    font-size: 16px;  
+  color: #808080; 
+font-weight: 400; 
+line-height: 24px; 
+letter-spacing: 0.64px;
+}
+
+
+.button {
+  display: block;
+  padding: 8px 16px; 
+  background: #4E75FF; 
+  border-radius: 8px; 
+  border: none;
+
+ color: white; 
+ font-size: 16px; 
+ font-family: Montserrat; 
+ font-weight: 500; 
+ line-height: 24px; 
+ letter-spacing: 0.64px;
+
+}
+
+/* Loader */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: #FF3D00;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+.is-hidden {
+  display: none;
+}
+
+/* Gallery */
+.gallery-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 20px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+        /* width: 100%;
+        display: flex;
+        text-align: center;
+        flex-wrap: wrap;
+        gap: 20px 20px; */
+}
+
+.gallery-link {
+ 
+  display: block;
+    cursor: pointer;
+     line-height: 0;
+  }
+
+.gallery-image {
+    display: block;
+    /* max-width: 360px;
+    object-fit: fill;    */
+    
+      aspect-ratio: 4 / 3;     /* можно 3/2 или 1/1 по вкусу */
+  object-fit: cover; 
+  }
+
+.gallery-item {
+  border: 1px #808080 solid;
+  /* max-width: 360px;
+  width: calc((100% - 24px) / 3);
+  margin-bottom: 0; */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-description {
+  display: flex;
+  justify-content: space-between; /* равномерное распределение блоков */
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  margin: 0;
+  list-style: none;
+  text-align: center;
+
+color: #2E2F42; 
+font-size: 12px; 
+font-family: Montserrat; 
+font-weight: 600; 
+line-height: 16px; 
+letter-spacing: 0.48px;
+
+  /* justify-content: space-around; */
+}
+
+.image-description-item {
+display: flex;
+flex-direction: column; /* подпись сверху, число снизу */
+  align-items: center;
+  font-size: 14px;
+  flex: 1; /* чтобы все 4 блока занимали одинаковую ширину */
+  text-align: center;
+  font-weight: 600;
+
+}
+
+.description-numbers {
+   margin-top: 4px;
+  font-weight: 400; 
+}
+
+.load-more {
+  margin: 0 auto;
+}
