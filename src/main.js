@@ -4,15 +4,14 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+import * as RenderFunctions from "./js/render-functions.js";
+import getImagesByQuery from "./js/pixabay-api.js"
+
 const form = document.querySelector(".form");
 const galleryList = document.querySelector(".gallery-list");
 const loader = document.querySelector(".loader");
 const buttonEl = document.querySelector('[data-action="load-more"]');
 
-
-
-import * as RenderFunctions from "./render-functions.js";
-import getImagesByQuery from "./pixabay-api.js"
 
 const params = {
     page: 1, 
@@ -35,6 +34,7 @@ let gallery = new SimpleLightbox('.gallery-list a', {
 
 // --- Слушатель формы ---
 form.addEventListener("submit", handleSearch);
+buttonEl.addEventListener("click", handleLoadMore);
 
 async function handleSearch(event) {
         event.preventDefault();
@@ -61,12 +61,10 @@ const { hits, total } = await getImagesByQuery(params);
 
 params.maxPage = Math.ceil( total / params.per_page);
 const images = hits;
-console.log('total', total);
-
-RenderFunctions.createGallery(images);
-gallery.refresh();
 
 if (images.length === 0) {
+    loaderMore.hideLoader();
+      loadMoreBtn.hideLoadMoreButton();
     iziToast.error({
          title: 'Error',
         message: 'Sorry, there are no images matching your search query. Please try again!',
@@ -75,14 +73,17 @@ if (images.length === 0) {
       return; // прерываем выполнение
 }
 
+RenderFunctions.createGallery(images);
+gallery.refresh();
+console.log(images);
+
+loaderMore.hideLoader(); 
+
 if(params.maxPage > 1) {
     loadMoreBtn.showLoadMoreButton();
-    loaderMore.hideLoader();
-    buttonEl.addEventListener("click", handleLoadMore);
 
 } else {
         loadMoreBtn.hideLoadMoreButton();
-        loaderMore.hideLoader(); 
 }
 
 }
@@ -117,14 +118,13 @@ console.log('params.maxPage', params.maxPage);
       message: `There is a problem during query ${err}`,
       position: "topRight",
     }); 
-    } finally {
+    } finally  {
+        loaderMore.hideLoader();
         if(params.page === params.maxPage) {
-            loadMoreBtn.hideLoadMoreButton;
-            loaderMore.hideLoader();
+            loadMoreBtn.hideLoadMoreButton();
             buttonEl.removeEventListener("click", handleLoadMore);
         } else {
             loadMoreBtn.showLoadMoreButton();
-            loaderMore.hideLoader();
         }
     }
 } 
