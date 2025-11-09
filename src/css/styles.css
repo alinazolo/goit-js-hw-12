@@ -71,13 +71,17 @@ letter-spacing: 0.64px;
 }
 
 /* Loader */
+
+
 .loader {
-    width: 48px;
-    height: 48px;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 10px;
+    width: 38px;
+    height: 38px;
     border: 5px solid #FFF;
-    border-bottom-color: #FF3D00;
+    border-bottom-color: #4E75FF;
     border-radius: 50%;
-    display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
     }
@@ -176,3 +180,5 @@ flex-direction: column; /* подпись сверху, число снизу */
 .load-more {
   margin: 0 auto;
 }
+
+.iziToast { z-index: 2147483647; }

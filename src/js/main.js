@@ -1,8 +1,8 @@
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-import iziToast from "izitoast";
-import "izitoast/dist/css/iziToast.min.css";
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector(".form");
 const galleryList = document.querySelector(".gallery-list");
@@ -42,27 +42,38 @@ async function handleSearch(event) {
 
 const form = event.currentTarget;
 params.q = form.elements.search.value.trim();
-console.log(params.q);
-if(!params.q) {
+
+if (!params.q) {
     iziToast.error({
-      title: "Error",
-      message: "Write a request",
-      position: "topRight",
+      title: 'Error',
+      message: 'Write a request',
+      position: 'topRight',
     });
     form.reset();
     return;
 }
 
 loaderMore.showLoader();
+loadMoreBtn.hideLoadMoreButton();
 
     try {
 const { hits, total } = await getImagesByQuery(params);
 
 params.maxPage = Math.ceil( total / params.per_page);
 const images = hits;
+console.log('total', total);
 
 RenderFunctions.createGallery(images);
 gallery.refresh();
+
+if (images.length === 0) {
+    iziToast.error({
+         title: 'Error',
+        message: 'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight', 
+      });
+      return; // прерываем выполнение
+}
 
 if(params.maxPage > 1) {
     loadMoreBtn.showLoadMoreButton();
@@ -71,14 +82,15 @@ if(params.maxPage > 1) {
 
 } else {
         loadMoreBtn.hideLoadMoreButton();
+        loaderMore.hideLoader(); 
 }
 
 }
-catch(err) {
+catch (err) {
     iziToast.error({
-      title: "Error",
+      title: 'Error',
       message: `There is a problem during query ${err}`,
-      position: "topRight",
+      position: 'topRight',
     });
 } finally {
         form.reset();
@@ -88,10 +100,16 @@ catch(err) {
 async function handleLoadMore() {
     params.page += 1; 
     loaderMore.showLoader();
+    loadMoreBtn.hideLoadMoreButton();
 
     try {
 const { hits } = await getImagesByQuery(params);
+
 RenderFunctions.createGallery(hits);
+gallery.refresh();
+
+console.log("params.page", params.page);
+console.log('params.maxPage', params.maxPage);
     }
     catch(err) {
       iziToast.error({
@@ -100,16 +118,18 @@ RenderFunctions.createGallery(hits);
       position: "topRight",
     }); 
     } finally {
-        if(params.page === maxPage) {
+        if(params.page === params.maxPage) {
             loadMoreBtn.hideLoadMoreButton;
+            loaderMore.hideLoader();
             buttonEl.removeEventListener("click", handleLoadMore);
         } else {
             loadMoreBtn.showLoadMoreButton();
+            loaderMore.hideLoader();
         }
     }
 } 
 
-/// добавить дизайн лоадера 
+// убиратькнопку пока грузяться ответы 
 // потестировтаь лоадер и кнопку 
 // сделать так чтобы лоадер и кнопка отражались вместе внизу страницы 
 
