@@ -126,11 +126,10 @@ letter-spacing: 0.64px;
   }
 
 .gallery-image {
-    display: block;
+  display: block;
     /* max-width: 360px;
     object-fit: fill;    */
-    
-      aspect-ratio: 4 / 3;     /* можно 3/2 или 1/1 по вкусу */
+  aspect-ratio: 4 / 3;     /* можно 3/2 или 1/1 по вкусу */
   object-fit: cover; 
   }
 

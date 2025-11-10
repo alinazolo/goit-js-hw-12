@@ -32,6 +32,26 @@ let gallery = new SimpleLightbox('.gallery-list a', {
   captionDelay: 250,
 });
 
+function getGalleryImageHeight() {
+  const firstImage = document.querySelector('.gallery-image');
+  if (!firstImage) return 0;
+  const { height } = firstImage.getBoundingClientRect();
+  return height;
+}
+
+async function smoothScrollByImageHeight(multiplier = 2) {
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+  const imgHeight = getGalleryImageHeight();
+  if (imgHeight > 0) {
+    window.scrollBy({
+      top: imgHeight * multiplier,
+      behavior: 'smooth',
+    });
+  }
+}
+
 // --- Слушатель формы ---
 form.addEventListener("submit", handleSearch);
 buttonEl.addEventListener("click", handleLoadMore);
@@ -75,7 +95,9 @@ if (images.length === 0) {
 
 RenderFunctions.createGallery(images);
 gallery.refresh();
-console.log(images);
+
+// плавна прокрутка вниз на дві висоти картинки
+await smoothScrollByImageHeight();
 
 loaderMore.hideLoader(); 
 
@@ -109,8 +131,9 @@ const { hits } = await getImagesByQuery(params);
 RenderFunctions.createGallery(hits);
 gallery.refresh();
 
-console.log("params.page", params.page);
-console.log('params.maxPage', params.maxPage);
+// плавна прокрутка вниз на дві висоти картинки
+await smoothScrollByImageHeight();
+
     }
     catch(err) {
       iziToast.error({
@@ -129,9 +152,7 @@ console.log('params.maxPage', params.maxPage);
     }
 } 
 
-// убиратькнопку пока грузяться ответы 
-// потестировтаь лоадер и кнопку 
-// сделать так чтобы лоадер и кнопка отражались вместе внизу страницы 
+
 
 
 
