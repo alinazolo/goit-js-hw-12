@@ -1,5 +1,5 @@
 
-const galleryList = document.querySelector(".gallery-list");
+const galleryList = document.querySelector(".gallery");
 const hiddenClass = "is-hidden";
 
 class ButtonService {

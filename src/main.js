@@ -8,7 +8,7 @@ import * as RenderFunctions from "./js/render-functions.js";
 import getImagesByQuery from "./js/pixabay-api.js"
 
 const form = document.querySelector(".form");
-const galleryList = document.querySelector(".gallery-list");
+const galleryList = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
 const buttonEl = document.querySelector('[data-action="load-more"]');
 
@@ -27,7 +27,7 @@ const loaderMore = new RenderFunctions.LoadService(loader, "is-hidden");
 loaderMore.hideLoader();
 
 // --- Инициализация SimpleLightbox ---
-let gallery = new SimpleLightbox('.gallery-list a', {
+let gallery = new SimpleLightbox('.gallery a', {
   captions: true,
   captionDelay: 250,
 });
