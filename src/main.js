@@ -1,5 +1,3 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
 
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -26,11 +24,7 @@ loadMoreBtn.hideLoadMoreButton();
 const loaderMore = new RenderFunctions.LoadService(loader, "is-hidden");
 loaderMore.hideLoader();
 
-// --- Инициализация SimpleLightbox ---
-let gallery = new SimpleLightbox('.gallery a', {
-  captions: true,
-  captionDelay: 250,
-});
+
 
 function getGalleryImageHeight() {
   const firstImage = document.querySelector('.gallery-image');
@@ -56,12 +50,19 @@ async function smoothScrollByImageHeight(multiplier = 2) {
 form.addEventListener("submit", handleSearch);
 buttonEl.addEventListener("click", handleLoadMore);
 
+let isLoading = false;
+
 async function handleSearch(event) {
-        event.preventDefault();
-        RenderFunctions.clearGallery();
+event.preventDefault();
+
+RenderFunctions.clearGallery();
 
 const form = event.currentTarget;
 params.q = form.elements.search.value.trim();
+
+  // важный сброс пагинации при новом запросе
+  params.page = 1;
+  params.maxPage = 1;
 
 if (!params.q) {
     iziToast.error({
@@ -73,6 +74,7 @@ if (!params.q) {
     return;
 }
 
+isLoading = true;
 loaderMore.showLoader();
 loadMoreBtn.hideLoadMoreButton();
 
@@ -80,9 +82,9 @@ loadMoreBtn.hideLoadMoreButton();
 const { hits, total } = await getImagesByQuery(params);
 
 params.maxPage = Math.ceil( total / params.per_page);
-const images = hits;
+console.log(total);
 
-if (images.length === 0) {
+if (hits.length === 0) {
     loaderMore.hideLoader();
       loadMoreBtn.hideLoadMoreButton();
     iziToast.error({
@@ -93,9 +95,7 @@ if (images.length === 0) {
       return; // прерываем выполнение
 }
 
-RenderFunctions.createGallery(images);
-gallery.refresh();
-
+RenderFunctions.createGallery(hits);
 // плавна прокрутка вниз на дві висоти картинки
 await smoothScrollByImageHeight();
 
@@ -116,23 +116,46 @@ catch (err) {
       position: 'topRight',
     });
 } finally {
-        form.reset();
+  loaderMore.hideLoader();
+  form.reset();
+  isLoading = false;
 }
 }
 
 async function handleLoadMore() {
-    params.page += 1; 
-    loaderMore.showLoader();
-    loadMoreBtn.hideLoadMoreButton();
+    if (isLoading) return;
+    params.page = Number(params.page) || 1; 
+    params.maxPage = Number(params.maxPage) || 1;
+
+    const nextPage = params.page + 1;
+
+    if (nextPage > params.page + 1) {
+          loadMoreBtn.hideLoadMoreButton();
+          return
+    }
+  isLoading = true;
+  loaderMore.showLoader();
+  loadMoreBtn.hideLoadMoreButton();
 
     try {
-const { hits } = await getImagesByQuery(params);
+      params.page = nextPage;
+const { hits } = await getImagesByQuery({ ...params, page: params.page });
+
+if (params.page >= params.maxPage) {
+    iziToast.info({
+      title: 'End',
+      message: "You have reached the end of the results.",
+      position: 'topRight',
+    });
+    loadMoreBtn.hideLoadMoreButton();
+    return;
+  }
 
 RenderFunctions.createGallery(hits);
-gallery.refresh();
-
 // плавна прокрутка вниз на дві висоти картинки
 await smoothScrollByImageHeight();
+
+
 
     }
     catch(err) {
@@ -143,11 +166,11 @@ await smoothScrollByImageHeight();
     }); 
     } finally  {
         loaderMore.hideLoader();
-        if(params.page === params.maxPage) {
-            loadMoreBtn.hideLoadMoreButton();
-            buttonEl.removeEventListener("click", handleLoadMore);
+        isLoading = false;
+        if(params.page < params.maxPage) {
+          loadMoreBtn.showLoadMoreButton();
         } else {
-            loadMoreBtn.showLoadMoreButton();
+          loadMoreBtn.hideLoadMoreButton();
         }
     }
 } 

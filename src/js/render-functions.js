@@ -2,6 +2,11 @@
 const galleryList = document.querySelector(".gallery");
 const hiddenClass = "is-hidden";
 
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+
+
 class ButtonService {
   constructor(buttonEl, hiddenClass) {
     this.buttonEl = buttonEl;
@@ -32,6 +37,18 @@ class LoadService {
   }
 }
 
+// --- Инициализация SimpleLightbox ---
+let galleryInstance = null;
+function ensureLightbox() {
+  if(!galleryInstance) {
+    galleryInstance = new SimpleLightbox('.gallery a', {
+  captions: true,
+  captionDelay: 250,
+});
+  } else {
+        galleryInstance.refresh();
+  }
+}
 
 function createGallery(images) {
   const markup = images
@@ -57,10 +74,16 @@ function createGallery(images) {
     .join('');
 
   galleryList.insertAdjacentHTML('beforeend', markup);
+    queueMicrotask(ensureLightbox);
+
 }
 
 function clearGallery() {
   galleryList.innerHTML = '';
+    if (galleryInstance) {
+    galleryInstance.destroy();
+    galleryInstance = null;
+    }
 }
 
 export { ButtonService, LoadService, createGallery, clearGallery };
