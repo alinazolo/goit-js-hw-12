@@ -83,6 +83,8 @@ const { hits, total } = await getImagesByQuery(params);
 
 params.maxPage = Math.ceil( total / params.per_page);
 console.log(total);
+console.log(params.maxPage, "params.maxPage")
+console.log(params.page, "params.page")
 
 if (hits.length === 0) {
     loaderMore.hideLoader();
@@ -106,6 +108,11 @@ if(params.maxPage > 1) {
 
 } else {
         loadMoreBtn.hideLoadMoreButton();
+      iziToast.info({
+      title: 'End',
+      message: 'You have reached the end of the results.',
+      position: 'topRight',
+    });
 }
 
 }
@@ -124,37 +131,33 @@ catch (err) {
 
 async function handleLoadMore() {
     if (isLoading) return;
+
     params.page = Number(params.page) || 1; 
     params.maxPage = Number(params.maxPage) || 1;
 
-    const nextPage = params.page + 1;
-
-    if (nextPage > params.page + 1) {
-          loadMoreBtn.hideLoadMoreButton();
-          return
-    }
-  isLoading = true;
-  loaderMore.showLoader();
-  loadMoreBtn.hideLoadMoreButton();
-
-    try {
-      params.page = nextPage;
-const { hits } = await getImagesByQuery({ ...params, page: params.page });
-
-if (params.page >= params.maxPage) {
+    if (params.page >= params.maxPage) {
     iziToast.info({
       title: 'End',
-      message: "You have reached the end of the results.",
+      message: 'You have reached the end of the results.',
       position: 'topRight',
     });
     loadMoreBtn.hideLoadMoreButton();
     return;
   }
 
+  const nextPage = params.page + 1;
+  isLoading = true;
+  loaderMore.showLoader();
+  loadMoreBtn.hideLoadMoreButton();
+
+    try {
+const { hits } = await getImagesByQuery({ ...params, page: nextPage });
+
+    params.page = nextPage;
+
 RenderFunctions.createGallery(hits);
 // плавна прокрутка вниз на дві висоти картинки
 await smoothScrollByImageHeight();
-
 
 
     }
@@ -171,6 +174,11 @@ await smoothScrollByImageHeight();
           loadMoreBtn.showLoadMoreButton();
         } else {
           loadMoreBtn.hideLoadMoreButton();
+        iziToast.info({
+        title: 'End',
+        message: 'You have reached the end of the results.',
+        position: 'topRight',
+      });
         }
     }
 } 
